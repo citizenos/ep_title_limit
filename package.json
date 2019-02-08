@@ -1,0 +1,5 @@
+{
+    "name": "ep_title_limit",
+    "description": "Plugin to display users if title is limited or cut of after export",
+    "version": "0.0.1"
+}
