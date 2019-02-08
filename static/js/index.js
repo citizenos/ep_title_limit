@@ -58,16 +58,16 @@ exports.aceEditEvent = function(hook, context, cb){
 
     var firstLine = context.rep.lines.atIndex(0);
     var maxLength = window.clientVars.ep_title_limit.maxLength;
-    if (firstLine.text.trim().length > maxLength) {
-        setTimeout(function() {            
-            context.editorInfo.ace_callWithAce(function(ace){
-                var activeLine = ace.ace_caretLine();
-                if (activeLine === 0) {
-                    ace.ace_doInsertTitleLimitMark();
-                }
-              },'insertTitleLimitMark' , true);
-        }, 200);
-    }
+    
+    setTimeout(function() {            
+        context.editorInfo.ace_callWithAce(function(ace){
+            var activeLine = ace.ace_caretLine();
+            if (activeLine === 0) {
+                ace.ace_doInsertTitleLimitMark();
+            }
+            },'insertTitleLimitMark' , true);
+    }, 200);
+
   
   }
 
