@@ -51,25 +51,21 @@ exports.aceCreateDomLine = function(name, context){
 };
 
 exports.aceEditEvent = function(hook, context, cb){
-    var cs = context.callstack;
-    if (cs.type === 'idleWorker' || cs.type === 'idleWorkTimer' || cs.type === 'insertTitleLimitMark') {
-        return;
+    var cs = context.callstack;    
+    if (['setBaseText', 'handleClick', 'handleKeyEvent'].indexOf(cs.type) >=0 && cs.docTextChanged) {
+      
+      setTimeout(function() {            
+          context.editorInfo.ace_callWithAce(function(ace){
+              var activeLine = ace.ace_caretLine();
+              if (activeLine === 0) {
+                  ace.ace_doInsertTitleLimitMark();
+              }
+              },'insertTitleLimitMark' , true);
+      }, 100);
     }
 
-    var firstLine = context.rep.lines.atIndex(0);
-    var maxLength = window.clientVars.ep_title_limit.maxLength;
-    
-    setTimeout(function() {            
-        context.editorInfo.ace_callWithAce(function(ace){
-            var activeLine = ace.ace_caretLine();
-            if (activeLine === 0) {
-                ace.ace_doInsertTitleLimitMark();
-            }
-            },'insertTitleLimitMark' , true);
-    }, 200);
-
-  
-  }
+  return;
+}
 
 function _checkLineForAttr (rep, line, attr) {
     var alineAttrs = rep.alines[line];

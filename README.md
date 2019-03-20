@@ -1,4 +1,4 @@
-# Plugin to override etherpad and it's plugins translations
+# Plugin to display info to user, if title length is limited
 
 This plugin helps to display users if document title is limited. In case document is exported to other systems and there are title limits, this plugin higlights the part of title that gets trimmed and also displays user an info modal.
 
