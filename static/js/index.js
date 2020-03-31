@@ -51,10 +51,10 @@ exports.aceCreateDomLine = function(name, context){
 };
 
 exports.aceEditEvent = function(hook, context, cb){
-    var cs = context.callstack;    
-    if (['setBaseText', 'handleClick', 'handleKeyEvent'].indexOf(cs.type) >=0 && cs.docTextChanged) {
-      
-      setTimeout(function() {            
+    var cs = context.callstack;
+    if (['setBaseText', 'handleClick', 'handleKeyEvent'].indexOf(cs.type) >=0 && context.rep.selEnd[0] === 0) {
+
+      setTimeout(function() {
           context.editorInfo.ace_callWithAce(function(ace){
               var activeLine = ace.ace_caretLine();
               if (activeLine === 0) {
@@ -87,15 +87,17 @@ function _checkLineForAttr (rep, line, attr) {
 function doInsertTitleLimitMark () {
     var maxLength = window.clientVars.ep_title_limit.maxLength;
     var rep = this.rep,
-    
+
     documentAttributeManager = this.documentAttributeManager;
-    
-    var line = rep.lines.atIndex(0);    
+
+    var line = rep.lines.atIndex(0);
+    var text = line.text;
+    text = text.replace(/(^\*)/, '');
     if (_checkLineForAttr(rep, 0, 'ttl')){
         documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
     }
 
-    if (line.text.trim().length > maxLength) {
+    if (text.trim().length > maxLength) {
         documentAttributeManager.setAttributesOnRange([0, maxLength+1], [0, line.text.length], [['ttl', 'ttl']]);
         displayInfoModal();
     } else {
