@@ -30,7 +30,7 @@ var displayInfoModal = function () {
     });
     $(modal).show();
     $(modal).css({
-        "position": "relative",
+        "position": "absolute",
         "top": top
     });
 }
@@ -108,7 +108,11 @@ function doInsertTitleLimitMark () {
 
 
 // Once ace is initialized, we set ace_doInsertTitleLimitMark and bind it to the context
-exports.aceInitialized = function aceInitialized(hook, context){
+exports.aceInitialized = function (hook, context){
   var editorInfo = context.editorInfo;
   editorInfo.ace_doInsertTitleLimitMark = _(doInsertTitleLimitMark).bind(context);
+}
+
+exports.aceEditorCSS = function () {
+  return ['ep_title_limit/static/css/ep_title_limit.css'];
 }
