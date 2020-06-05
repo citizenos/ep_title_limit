@@ -15,22 +15,23 @@ exports.aceAttribsToClasses = function aceAttribsToClasses(hook, context){
 
 var hideInfoModal = function () {
     $("#ttl_modal").hide();
+    $("#ttl_modal").removeClass('popup-show');
 };
 //display and position info modal
 var displayInfoModal = function () {
     var padOuter = $('iframe[name="ace_outer"]').contents().find("body");
-    var padInner = padOuter.find('iframe[name="ace_inner"]').contents().find("body");
+    var padInner = padOuter.find('iframe[name="ace_inner"]');
     var modal = $("#ttl_modal");
-    var line = padInner.children()[0];
-    var top = $(line).position().top + $(line).height() + $('#editbar').height();
+    var line = padInner.contents().find("body").children()[0];
+    var top = $(line).offset().top + $(line)[0].offsetHeight + parseInt(padInner.css('padding-top')) + $('#editbar').height();;
 
     $(modal).off();
     $(modal).on('click', function () {
         hideInfoModal();
     });
     $(modal).show();
+    $(modal).addClass('popup-show');
     $(modal).css({
-        "position": "absolute",
         "top": top
     });
 }
