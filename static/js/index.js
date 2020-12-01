@@ -13,12 +13,12 @@ exports.aceAttribsToClasses = (hook, context) => {
   }
 };
 
-const hideInfoModal = () => {
+const _hideInfoModal = () => {
   $('#ttl_modal').hide();
   $('#ttl_modal').removeClass('popup-show');
 };
 // display and position info modal
-const displayInfoModal = () => {
+const _displayInfoModal = () => {
   const padOuter = $('iframe[name="ace_outer"]').contents().find('body');
   const padInner = padOuter.find('iframe[name="ace_inner"]');
   const modal = $('#ttl_modal');
@@ -31,7 +31,7 @@ const displayInfoModal = () => {
 
   $(modal).off();
   $(modal).on('click', () => {
-    hideInfoModal();
+    _hideInfoModal();
   });
   $(modal).show();
   $(modal).addClass('popup-show');
@@ -58,15 +58,15 @@ exports.aceCreateDomLine = (name, context) => {
 exports.aceEditEvent = (hook, context, cb) => {
   const cs = context.callstack;
   const isTitle = context.rep.selEnd[0] === 0;
-  if (['setBaseText', 'handleClick', 'handleKeyEvent'].indexOf(cs.type) >= 0 && isTitle) {
-    setTimeout(() => {
+  if (isTitle && ['handleClick', 'handleKeyEvent'].indexOf(cs.type) >= 0) {
+   // _.debounce(() => {
       context.editorInfo.ace_callWithAce((ace) => {
         const activeLine = ace.ace_caretLine();
         if (activeLine === 0) {
           ace.ace_doInsertTitleLimitMark();
         }
-      }, 'insertTitleLimitMark', true);
-    }, 100);
+      }, 'doInsertTitleLimitMark', true);
+//    }, 100);
   }
 
   return cb();
@@ -108,10 +108,10 @@ const doInsertTitleLimitMark = function () {
         [0, maxLength + 1],
         [0, line.text.length], [['ttl', 'ttl']]
     );
-    displayInfoModal();
+    _displayInfoModal();
   } else {
     documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
-    hideInfoModal();
+    _hideInfoModal();
   }
 };
 
