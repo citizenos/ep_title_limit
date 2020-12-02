@@ -57,16 +57,17 @@ exports.aceCreateDomLine = (name, context) => {
 
 exports.aceEditEvent = (hook, context, cb) => {
   const cs = context.callstack;
+  if (!context.rep.selEnd) return cb();
   const isTitle = context.rep.selEnd[0] === 0;
   if (isTitle && ['handleClick', 'handleKeyEvent'].indexOf(cs.type) >= 0) {
-   // _.debounce(() => {
+    setTimeout(() => {
       context.editorInfo.ace_callWithAce((ace) => {
         const activeLine = ace.ace_caretLine();
         if (activeLine === 0) {
           ace.ace_doInsertTitleLimitMark();
         }
       }, 'doInsertTitleLimitMark', true);
-//    }, 100);
+    });
   }
 
   return cb();
