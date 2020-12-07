@@ -94,26 +94,26 @@ const _checkLineForAttr = (rep, line, attr) => {
 const doInsertTitleLimitMark = function () {
   const maxLength = window.clientVars.ep_title_limit.maxLength;
   const rep = this.rep;
-
   const documentAttributeManager = this.documentAttributeManager;
+  _.debounce(() => {
+    const line = rep.lines.atIndex(0);
+    let text = line.text;
+    text = text.replace(/(^\*)/, '');
+    if (_checkLineForAttr(rep, 0, 'ttl')) {
+      documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
+    }
 
-  const line = rep.lines.atIndex(0);
-  let text = line.text;
-  text = text.replace(/(^\*)/, '');
-  if (_checkLineForAttr(rep, 0, 'ttl')) {
-    documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
-  }
-
-  if (text.trim().length > maxLength) {
-    documentAttributeManager.setAttributesOnRange(
-        [0, maxLength + 1],
-        [0, line.text.length], [['ttl', 'ttl']]
-    );
-    _displayInfoModal();
-  } else {
-    documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
-    _hideInfoModal();
-  }
+    if (text.trim().length > maxLength) {
+      documentAttributeManager.setAttributesOnRange(
+          [0, maxLength + 1],
+          [0, line.text.length], [['ttl', 'ttl']]
+      );
+      _displayInfoModal();
+    } else {
+      documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
+      _hideInfoModal();
+    }
+  }, 100);
 };
 
 
