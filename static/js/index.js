@@ -59,6 +59,7 @@ exports.aceEditEvent = (hook, context, cb) => {
   const cs = context.callstack;
   if (!context.rep.selEnd) return cb();
   const isTitle = context.rep.selEnd[0] === 0;
+	console.log('EVENT', cs.type, cs);
   if (isTitle && ['handleClick', 'handleKeyEvent'].indexOf(cs.type) >= 0) {
     setTimeout(() => {
       context.editorInfo.ace_callWithAce((ace) => {
