@@ -55,25 +55,6 @@ exports.aceCreateDomLine = (name, context) => {
   return [];
 };
 
-exports.aceEditEvent = (hook, context, cb) => {
-  const cs = context.callstack;
-  if (!context.rep.selEnd) return cb();
-  const isTitle = context.rep.selEnd[0] === 0;
-	console.log('EVENT', cs.type, cs);
-  if (isTitle && ['handleClick', 'handleKeyEvent'].indexOf(cs.type) >= 0) {
-    setTimeout(() => {
-      context.editorInfo.ace_callWithAce((ace) => {
-        const activeLine = ace.ace_caretLine();
-        if (activeLine === 0) {
-          ace.ace_doInsertTitleLimitMark();
-        }
-      }, 'doInsertTitleLimitMark', true);
-    });
-  }
-
-  return cb();
-};
-
 const _checkLineForAttr = (rep, line, attr) => {
   const alineAttrs = rep.alines[line];
   let hasAttr = false;
@@ -96,25 +77,22 @@ const doInsertTitleLimitMark = function () {
   const maxLength = window.clientVars.ep_title_limit.maxLength;
   const rep = this.rep;
   const documentAttributeManager = this.documentAttributeManager;
-  _.debounce(() => {
-    const line = rep.lines.atIndex(0);
-    let text = line.text;
-    text = text.replace(/(^\*)/, '');
-    if (_checkLineForAttr(rep, 0, 'ttl')) {
-      documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
-    }
-
-    if (text.trim().length > maxLength) {
-      documentAttributeManager.setAttributesOnRange(
-          [0, maxLength + 1],
-          [0, line.text.length], [['ttl', 'ttl']]
-      );
-      _displayInfoModal();
-    } else {
-      documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
-      _hideInfoModal();
-    }
-  }, 100);
+  const line = rep.lines.atIndex(0);
+  let text = line.text;
+  text = text.replace(/(^\*)/, '');
+  if (_checkLineForAttr(rep, 0, 'ttl')) {
+    documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
+  }
+  if (text.trim().length > maxLength) {
+    documentAttributeManager.setAttributesOnRange(
+        [0, maxLength + 1],
+        [0, line.text.length], [['ttl', 'ttl']]
+    );
+    _displayInfoModal();
+  } else {
+    documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
+    _hideInfoModal();
+  }
 };
 
 
@@ -122,6 +100,11 @@ const doInsertTitleLimitMark = function () {
 exports.aceInitialized = (hook, context) => {
   const editorInfo = context.editorInfo;
   editorInfo.ace_doInsertTitleLimitMark = _(doInsertTitleLimitMark).bind(context);
+  setInterval(() => {
+    editorInfo.ace_callWithAce((ace) => {
+      ace.ace_doInsertTitleLimitMark();
+    }, 'doInsertTitleLimitMark', true);
+  }, 1000);
 };
 
 exports.aceEditorCSS = () => ['ep_title_limit/static/css/ep_title_limit.css'];
