@@ -74,14 +74,17 @@ const _checkLineForAttr = (rep, line, attr) => {
 
 let lastVersion = '';
 // Wrap over limit text with marker and display info modal
-const doInsertTitleLimitMark = function () {
+let doInsertTitleLimitMark = function () {
   const maxLength = window.clientVars.ep_title_limit.maxLength;
   const rep = this.rep;
   const documentAttributeManager = this.documentAttributeManager;
   const line = rep.lines.atIndex(0);
   let text = line.text;
   text = text.replace(/(^\*)/, '');
-  if (text === lastVersion) return;
+  if (text === lastVersion && text.trim().length < maxLength) {
+    _hideInfoModal();
+    return;
+  }
   lastVersion = text;
   if (_checkLineForAttr(rep, 0, 'ttl')) {
     documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
@@ -92,9 +95,6 @@ const doInsertTitleLimitMark = function () {
         [0, line.text.length], [['ttl', 'ttl']]
     );
     _displayInfoModal();
-  } else {
-    documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
-    _hideInfoModal();
   }
 };
 
