@@ -72,6 +72,7 @@ const _checkLineForAttr = (rep, line, attr) => {
   return hasAttr;
 };
 
+let lastVersion = '';
 // Wrap over limit text with marker and display info modal
 const doInsertTitleLimitMark = function () {
   const maxLength = window.clientVars.ep_title_limit.maxLength;
@@ -80,6 +81,8 @@ const doInsertTitleLimitMark = function () {
   const line = rep.lines.atIndex(0);
   let text = line.text;
   text = text.replace(/(^\*)/, '');
+  if (text === lastVersion) return;
+  lastVersion = text;
   if (_checkLineForAttr(rep, 0, 'ttl')) {
     documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ttl', false]]);
   }

@@ -1,49 +1,16 @@
 #ttl_modal {
-    padding: 15px;
-    background: #ECECEC;
-    color: #252525;
-    z-index: 1;
     right: 0;
     left: 0;
-    margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
+    width: max-content;
+    height: max-content;
 }
 
-#ttl_modal:after {
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: 17px;
-    right: auto;
-    top: -12px;
-    bottom: auto;
-    border: 6px solid;
-    border-color: transparent transparent #ECECEC;
-}
-
-.info_icon_wrapper {
-    display: table-cell;
-    width: 30px;
-    height: 16px;
-}
 
 .info_icon {
     display: block;
     background-image: url("../image/icon_info_blue.png");
     width: 16px;
     height: 16px;
-}
-#ttl_modal .content {
-    display: table-cell;
-    font-family: "Open Sans";
-    font-size: 14px;
-    line-height: 19px;
-    margin-top: -2px;
-}
-
-#ttl_modal .content p {
-    top: -3px;
-    position: relative;
 }
