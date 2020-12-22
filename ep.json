@@ -5,6 +5,7 @@
         "post": ["ep_etherpad-lite/static"],
         "client_hooks": {
           "aceInitialized": "ep_title_limit/static/js/index",
+          "aceEditEvent": "ep_title_limit/static/js/index",
           "aceEditorCSS": "ep_title_limit/static/js/index",
           "aceCreateDomLine": "ep_title_limit/static/js/index",
           "aceAttribsToClasses": "ep_title_limit/static/js/index",
