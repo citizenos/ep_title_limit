@@ -100,29 +100,14 @@ let doInsertTitleLimitMark = function () {
 exports.aceInitialized = (hook, context) => {
   const editorInfo = context.editorInfo;
   editorInfo.ace_doInsertTitleLimitMark = _(doInsertTitleLimitMark).bind(context);
+  setInterval(function () {
+    context.editorInfo.ace_callWithAce(function(ace){
+      var activeLine = ace.ace_caretLine();
+      if (activeLine === 0) {
+          ace.ace_doInsertTitleLimitMark();
+      }
+    },'insertTitleLimitMark' , true);
+  },1000);
 };
 
-exports.aceEditEvent = function (hook, context, cb) {
-  const cs = context.callstack;
-  const rep = context.rep;
-  if (rep.selEnd && rep.selEnd[0] === 0 && (['setBaseText', 'handleClick'].indexOf(cs.type) >=0 || (cs.type === 'handleKeyEvent' && cs.observedSelection))) {
-    const padOuter = $('iframe[name="ace_outer"]').contents().find('body');
-    const padInner = padOuter.find('iframe[name="ace_inner"]').contents();
-    if (!$('#editorloadingbox').is(':visible')) {
-        setTimeout(function () {
-          context.editorInfo.ace_callWithAce(function(ace){
-            var activeLine = ace.ace_caretLine();
-            if (activeLine === 0) {
-                ace.ace_doInsertTitleLimitMark();
-            }
-          },'insertTitleLimitMark' , true);
-        });
-    }
-
-    return cb();
-  } else {
-    return cb();
-  }
-
-}
 exports.aceEditorCSS = () => ['ep_title_limit/static/css/ep_title_limit.css'];
