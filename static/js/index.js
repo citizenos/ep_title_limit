@@ -1,10 +1,20 @@
 'use strict';
 
 const _ = require('ep_etherpad-lite/static/js/underscore');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 
 // Our ttl attribute will result in a ttl class
+/**
+ * aceAttribsToClasses
+ *
+ * @param hook
+ * @param context
+ * @returns {[string]}
+ *
+ * @see https://etherpad.org/doc/v1.8.13/#index_aceattribstoclasses
+ */
 exports.aceAttribsToClasses = (hook, context) => {
+  console.log('ep_title_limit.aceAttribsToClasses', arguments);
+
   if (context.key.indexOf('ttl:') !== -1) {
     return ['ttl'];
   }
@@ -14,11 +24,16 @@ exports.aceAttribsToClasses = (hook, context) => {
 };
 
 const _hideInfoModal = () => {
+  console.log('ep_title_limit._hideInfoModal', arguments);
+
   $('#ttl_modal').hide();
   $('#ttl_modal').removeClass('popup-show');
 };
+
 // display and position info modal
 const _displayInfoModal = () => {
+  console.log('ep_title_limit._displayInfoModal', arguments);
+
   const padOuter = $('iframe[name="ace_outer"]').contents().find('body');
   const padInner = padOuter.find('iframe[name="ace_inner"]');
   const modal = $('#ttl_modal');
@@ -40,7 +55,18 @@ const _displayInfoModal = () => {
   });
 };
 
+/**
+ * aceCreateDomLine
+ *
+ * @param name
+ * @param context
+ * @returns {[{extraOpenTags: string, extraCloseTags: string, cls}]|*[]}
+ *
+ * @see https://etherpad.org/doc/v1.8.13/#index_acecreatedomline
+ */
 exports.aceCreateDomLine = (name, context) => {
+  console.log('ep_title_limit.aceCreateDomLine', arguments);
+
   const cls = context.cls;
   const ttl = /(?:^| )ttl:([A-Za-z0-9]*)/.exec(cls);
 
@@ -55,26 +81,11 @@ exports.aceCreateDomLine = (name, context) => {
   return [];
 };
 
-const _checkLineForAttr = (rep, line, attr) => {
-  const alineAttrs = rep.alines[line];
-  let hasAttr = false;
-  if (alineAttrs) {
-    const opIter = Changeset.opIterator(alineAttrs);
-    while (opIter.hasNext()) {
-      const op = opIter.next();
-      const r = Changeset.opAttributeValue(op, attr, rep.apool);
-      if (r) {
-        hasAttr = true;
-      }
-    }
-  }
-
-  return hasAttr;
-};
-
 let lastVersion = '';
 // Wrap over limit text with marker and display info modal
 let doInsertTitleLimitMark = function () {
+  console.log('ep_title_limit.doInsertTitleLimitMark', arguments);
+
   const maxLength = window.clientVars.ep_title_limit.maxLength;
   const rep = this.rep;
   const documentAttributeManager = this.documentAttributeManager;
@@ -96,11 +107,23 @@ let doInsertTitleLimitMark = function () {
 };
 
 
+/**
+ * aceInitialized
+ *
+ * @param hook
+ * @param context
+ *
+ * @see https://etherpad.org/doc/v1.8.13/#index_aceinitialized
+ */
 // Once ace is initialized, we set ace_doInsertTitleLimitMark and bind it to the context
 exports.aceInitialized = (hook, context) => {
+  console.log('ep_title_limit.aceInitialized', arguments);
+
   const editorInfo = context.editorInfo;
   editorInfo.ace_doInsertTitleLimitMark = _(doInsertTitleLimitMark).bind(context);
   setInterval(function () {
+    console.log('ep_title_limit.aceInitialized.setInterval - do work!', arguments);
+
     context.editorInfo.ace_callWithAce(function(ace){
       var activeLine = ace.ace_caretLine();
       if (activeLine === 0) {
