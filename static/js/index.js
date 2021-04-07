@@ -122,18 +122,18 @@ let doInsertTitleLimitMark = function () {
 exports.aceInitialized = (hook, context) => {
     console.debug('ep_title_limit.aceInitialized', arguments);
 
-    const editorInfo = context.editorInfo;
-    editorInfo.ace_doInsertTitleLimitMark = _(doInsertTitleLimitMark).bind(context);
-    setInterval(function () {
-        console.debug('ep_title_limit.aceInitialized.setInterval - do work!', arguments);
-
-        context.editorInfo.ace_callWithAce(function (ace) {
-            var activeLine = ace.ace_caretLine();
-            if (activeLine === 0) {
-                ace.ace_doInsertTitleLimitMark();
-            }
-        }, 'insertTitleLimitMark', true);
-    }, 1000);
+    // const editorInfo = context.editorInfo;
+    // editorInfo.ace_doInsertTitleLimitMark = _(doInsertTitleLimitMark).bind(context);
+    // setInterval(function () {
+    //     console.debug('ep_title_limit.aceInitialized.setInterval - do work!', arguments);
+    //
+    //     context.editorInfo.ace_callWithAce(function (ace) {
+    //         var activeLine = ace.ace_caretLine();
+    //         if (activeLine === 0) {
+    //             ace.ace_doInsertTitleLimitMark();
+    //         }
+    //     }, 'insertTitleLimitMark', true);
+    // }, 1000);
 };
 
 var lastEventFiredTimestamp;
