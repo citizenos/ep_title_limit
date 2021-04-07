@@ -95,16 +95,16 @@ let doInsertTitleLimitMark = function () {
 
     if (text.trim().length < maxLength) {
         previousTitleText = text;
-        if (_checkLineForAttr(rep, 0, 'ep_title_limit_ttl')) {
-            documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ep_title_limit_ttl', false]]);
-        }
+        // if (_checkLineForAttr(rep, 0, 'ep_title_limit_ttl')) {
+        //     documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ep_title_limit_ttl', false]]);
+        // }
         _hideInfoModal();
     } else {
-        documentAttributeManager.setAttributesOnRange(
-            [0, maxLength + 1],
-            [0, line.text.length], [['ep_title_limit_ttl', 'ep_title_limit_ttl']]
-        );
-        previousTitleText = text;
+        // documentAttributeManager.setAttributesOnRange(
+        //     [0, maxLength + 1],
+        //     [0, line.text.length], [['ep_title_limit_ttl', 'ep_title_limit_ttl']]
+        // );
+        // previousTitleText = text;
         _displayInfoModal();
     }
 };
@@ -134,6 +134,14 @@ exports.aceInitialized = (hook, context) => {
             }
         }, 'insertTitleLimitMark', true);
     }, 1000);
+};
+
+var lastEventFiredTimestamp;
+exports.aceKeyEvent = (hook, context) => {
+    if(!lastEventFiredTimestamp) lastEventFiredTimestamp = new Date().getTime();
+    var currentEventTimestamp = new Date().getTime();
+    console.debug('ep_title_limit', 'hook:' + hook, context.evt.type, currentEventTimestamp - lastEventFiredTimestamp, context);
+    lastEventFiredTimestamp = currentEventTimestamp;
 };
 
 exports.aceEditorCSS = () => ['ep_title_limit/static/css/ep_title_limit.css'];
