@@ -45,10 +45,9 @@ const _checkLineForAttr = (rep, line, attr) => {
 };
 
 const _hideInfoModal = () => {
-    console.debug('ep_title_limit._hideInfoModal', arguments);
-
-    $('#ep_title_limit_ttl_modal').hide();
-    $('#ep_title_limit_ttl_modal').removeClass('popup-show');
+    let modal = $('#ep_title_limit_ttl_modal');
+    modal.hide();
+    modal.removeClass('popup-show');
 };
 
 // display and position info modal
@@ -78,12 +77,10 @@ const _displayInfoModal = () => {
 
 let previousTitleText = '';
 // Wrap over limit text with marker and display info modal
-let doInsertTitleLimitMark = function () {
-    console.debug('ep_title_limit.doInsertTitleLimitMark', arguments, this);
-
+const doInsertTitleLimitMark = function (context, skipAttributes) {
     const maxLength = window.clientVars.ep_title_limit.maxLength;
-    const rep = this.rep;
-    const documentAttributeManager = this.documentAttributeManager;
+    const rep = context.rep;
+    const documentAttributeManager = context.documentAttributeManager;
     const line = rep.lines.atIndex(0);
     let text = line.text;
     text = text.replace(/(^\*)/, '');
@@ -95,53 +92,47 @@ let doInsertTitleLimitMark = function () {
 
     if (text.trim().length < maxLength) {
         previousTitleText = text;
-        // if (_checkLineForAttr(rep, 0, 'ep_title_limit_ttl')) {
-        //     documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ep_title_limit_ttl', false]]);
-        // }
+        if (!skipAttributes && _checkLineForAttr(rep, 0, 'ep_title_limit_ttl')) {
+            console.log('attributes SET');
+            documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ep_title_limit_ttl', false]]);
+        }
         _hideInfoModal();
     } else {
-        // documentAttributeManager.setAttributesOnRange(
-        //     [0, maxLength + 1],
-        //     [0, line.text.length], [['ep_title_limit_ttl', 'ep_title_limit_ttl']]
-        // );
-        // previousTitleText = text;
+        if (!skipAttributes) {
+            console.log('attributes UNSET');
+            documentAttributeManager.setAttributesOnRange(
+                [0, maxLength + 1],
+                [0, line.text.length], [['ep_title_limit_ttl', 'ep_title_limit_ttl']]
+            );
+        }
+        previousTitleText = text;
         _displayInfoModal();
     }
 };
 
 
-/**
- * aceInitialized
- *
- * @param hook
- * @param context
- *
- * @see https://etherpad.org/doc/v1.8.13/#index_aceinitialized
- */
-// Once ace is initialized, we set ace_doInsertTitleLimitMark and bind it to the context
-exports.aceInitialized = (hook, context) => {
-    console.debug('ep_title_limit.aceInitialized', arguments);
-
-    // const editorInfo = context.editorInfo;
-    // editorInfo.ace_doInsertTitleLimitMark = _(doInsertTitleLimitMark).bind(context);
-    // setInterval(function () {
-    //     console.debug('ep_title_limit.aceInitialized.setInterval - do work!', arguments);
-    //
-    //     context.editorInfo.ace_callWithAce(function (ace) {
-    //         var activeLine = ace.ace_caretLine();
-    //         if (activeLine === 0) {
-    //             ace.ace_doInsertTitleLimitMark();
-    //         }
-    //     }, 'insertTitleLimitMark', true);
-    // }, 1000);
-};
-
-var lastEventFiredTimestamp;
+// Triggers before any changes are made, enables plugins to change outcome
 exports.aceKeyEvent = (hook, context) => {
-    if(!lastEventFiredTimestamp) lastEventFiredTimestamp = new Date().getTime();
-    var currentEventTimestamp = new Date().getTime();
-    console.debug('ep_title_limit', 'hook:' + hook, context.evt.type, currentEventTimestamp - lastEventFiredTimestamp, context);
-    lastEventFiredTimestamp = currentEventTimestamp;
+    console.log('ep_title_limit', hook, context);
+    // Check for 'keydown' event only for mobiles to act the same way as desktop - https://github.com/citizenos/citizenos-fe/issues/535#issuecomment-805897450
+    if (context.evt.type !== 'keydown') {
+        return false;
+    }
+
+    // Desktop or better say NOT a virtual keyboard device (touch device).
+    // We need to skip the "callWithAce" part as this will cause weird behavior on mobile - https://github.com/citizenos/citizenos-fe/issues/535
+    if (context.evt.key !== 'Unidentified') {
+        // Avoid race condition (callStack === null)
+        setTimeout(function () {
+            context.editorInfo.ace_callWithAce(function () {
+                doInsertTitleLimitMark(context, false);
+            }, 'insertTitleLimitMark', true);
+        }, 0);
+    } else { // Virtual keyboard device
+        doInsertTitleLimitMark(context, true);
+    }
+
+    return false;
 };
 
 exports.aceEditorCSS = () => ['ep_title_limit/static/css/ep_title_limit.css'];
