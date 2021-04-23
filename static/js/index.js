@@ -16,8 +16,6 @@ const Changeset = require('ep_etherpad-lite/static/js/Changeset');
  * @see https://etherpad.org/doc/v1.8.13/#index_aceattribstoclasses
  */
 exports.aceAttribsToClasses = (hook, context) => {
-    console.debug('ep_title_limit.aceAttribsToClasses', arguments);
-
     // Our ep_title_limit_ttl attribute will result in a ep_title_limit_ttl class
     if (context.key.indexOf('ep_title_limit_ttl:') !== -1) {
         return ['ep_title_limit_ttl'];
@@ -52,8 +50,6 @@ const _hideInfoModal = () => {
 
 // display and position info modal
 const _displayInfoModal = () => {
-    console.debug('ep_title_limit._displayInfoModal', arguments);
-
     const padOuter = $('iframe[name="ace_outer"]').contents().find('body');
     const padInner = padOuter.find('iframe[name="ace_inner"]');
     const modal = $('#ep_title_limit_ttl_modal');
@@ -93,13 +89,11 @@ const doInsertTitleLimitMark = function (context, skipAttributes) {
     if (text.trim().length < maxLength) {
         previousTitleText = text;
         if (!skipAttributes && _checkLineForAttr(rep, 0, 'ep_title_limit_ttl')) {
-            console.log('attributes SET');
             documentAttributeManager.setAttributesOnRange([0, 0], [0, line.text.length], [['ep_title_limit_ttl', false]]);
         }
         _hideInfoModal();
     } else {
         if (!skipAttributes) {
-            console.log('attributes UNSET');
             documentAttributeManager.setAttributesOnRange(
                 [0, maxLength + 1],
                 [0, line.text.length], [['ep_title_limit_ttl', 'ep_title_limit_ttl']]
@@ -113,7 +107,6 @@ const doInsertTitleLimitMark = function (context, skipAttributes) {
 
 // Triggers before any changes are made, enables plugins to change outcome
 exports.aceKeyEvent = (hook, context) => {
-    console.log('ep_title_limit', hook, context);
     // Check for 'keydown' event only for mobiles to act the same way as desktop - https://github.com/citizenos/citizenos-fe/issues/535#issuecomment-805897450
     if (context.evt.type !== 'keydown') {
         return false;
