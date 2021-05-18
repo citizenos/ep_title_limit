@@ -8,7 +8,7 @@ exports.loadSettings = (hook, context, cb) => {
   return cb();
 };
 
-exports.clientVars = (hook, context, callback) => callback({ep_title_limit: settings});
+exports.clientVars = (hook, context, callback) => callback({ep_title_limit: settings}); // eslint-disable-line camelcase, max-len
 
 exports.eejsBlock_body = (hook, args, cb) => {
   args.content += eejs.require('ep_title_limit/templates/modal.ejs');
